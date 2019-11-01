@@ -1,2 +1,3 @@
-# forevis
+# FOREVIS
+
 FOREVIS (Foreign Exchange Visualization)
