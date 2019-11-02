@@ -24,26 +24,27 @@ for index, argument in enumerate(arguments):
 
 inform_query(crypto, base_currency, days)
 
-btc = Stoncks(function="DIGITAL_CURRENCY_DAILY", crypto=crypto, base_currency=base_currency)
-btc_data = btc.send()
+request = Stoncks(function="DIGITAL_CURRENCY_DAILY", crypto=crypto, base_currency=base_currency)
+response = request.send()
 
 figure, axe = plt.subplots(figsize = (10,5))
 
 quotes = [
     tuple(
             [
-                btc_data["time"][x],
-                btc_data["open"][x],
-                btc_data["high"][x],
-                btc_data["low"][x],
-                btc_data["close"][x],
+                response["time"][x],
+                response["open"][x],
+                response["high"][x],
+                response["low"][x],
+                response["close"][x],
             ]
         ) 
-    for x in range(len(btc_data["time"]))
+    for x in range(len(response["time"]))
 ]
 
 quotes = quotes[::-1]
+quotes = quotes[-int(days):]
 mpl_finance.candlestick_ohlc(axe, quotes, colordown='r', colorup='g')
 plt.xlabel('Time')
-plt.title('Daily Prices and Volumes for Digital Currency')
+plt.title(f'Daily Prices and Volumes for Digital Currency - {crypto} to {base_currency}')
 plt.show()

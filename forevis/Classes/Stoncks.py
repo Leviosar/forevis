@@ -17,7 +17,7 @@ class Stoncks:
     def send(self):
         response = requests.get(f'{self.base_url}function={self.function}&symbol={self.crypto}&market={self.base_currency}&apikey={self.api_key}')
         response = response.json()
-        
+
         datas = [value for index, value in enumerate(response["Time Series (Digital Currency Daily)"])]
         numeric_datas = [self.format_data(x) for x in datas]
         high = [int(float(response["Time Series (Digital Currency Daily)"][data][f"2a. high ({self.base_currency})"])) for data in datas]
