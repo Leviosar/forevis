@@ -5,7 +5,7 @@ class Controller:
         self.days = days
     
     def set_crypto(self, text):
-        self.crypto = text
+        self.crypto = text.upper()
 
     def set_currency(self, text):
-        self.currency = text
+        self.currency = text.upper()
