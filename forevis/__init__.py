@@ -32,7 +32,7 @@ def fetch_info(event=None):
     response = request.send()
     
     quotes = [
-        tuple(
+            (
                 [
                     response["time"][x],
                     response["open"][x],
@@ -46,6 +46,8 @@ def fetch_info(event=None):
 
     quotes = quotes[::-1]
     quotes = quotes[-int(controller.days):]
+    axe.set_title(controller.crypto)
+    axe.set(xlabel="Date", ylabel=controller.currency)
     mpl_finance.candlestick_ohlc(axe, quotes, colordown='r', colorup='g')
     axe.xaxis_date()
 
