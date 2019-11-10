@@ -1,4 +1,4 @@
-class Controller:
+class TextBoxData:
     def __init__(self, crypto, currency, days):
         self.crypto = crypto
         self.currency = currency
