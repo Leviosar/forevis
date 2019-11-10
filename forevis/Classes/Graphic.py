@@ -10,13 +10,13 @@ class Graphic:
     def draw_graphic(self, event=None):
         self.axe.clear()
 
-        quotes = self.get_data()
+        quotes, volume, time, market = self.get_data()
 
         self.axe.set_title(self.text_box_data.crypto)
         self.axe.set(xlabel="Date", ylabel=self.text_box_data.currency)
 
         mpl_finance.candlestick_ohlc(self.axe, quotes, colordown='r', colorup='g')
-
+        self.axe.plot(time, volume)
         self.axe.xaxis_date()
 
     def get_data(self):
@@ -36,7 +36,10 @@ class Graphic:
             for x in range(len(response["time"]))
         ]
 
+        volume = [response["volume"][x] for x in range(len(response["time"]))]
+        market = [response["market_cap"][x] for x in range(len(response["time"]))]
+        time = response["time"]
         quotes = quotes[::-1]
         quotes = quotes[-int(self.text_box_data.days):]
 
-        return quotes
+        return quotes, volume, time, market
