@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://kit.fontawesome.com/18429bc2de.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vanilla-masker@1.1.1/build/vanilla-masker.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+    <title>Forevis</title>
+</head>
+<body>
+    <main>
+        <header>
+            <i class="fas fa-dollar-sign"></i>
+            <h1>Só no forevis</h1>
+        </header>
+        <section>
+            <div class="row">
+                <input type="text" value="BTC" placeholder="crypto" maxlength="3" spellcheck="false" id="crypto">
+                <input type="text" value="USD" placeholder="exchange" maxlength="3" spellcheck="false" id="exchange">
+                <button>
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <button class="tooltip"><i class="fas fa-question"></i></button>
+        </section>
+    </main>
+
+    <script defer>
+        const crypto = document.querySelector('main > section > div > input#crypto')
+        const exchange = document.querySelector('main > section > div > input#exchange')
+        const search = document.querySelector('main > section > div > button')
+
+        search.addEventListener('click', (ev) => {
+            window.location = 'http://localhost:8000/crypto/chart/?crypto='+crypto.value+'&exchange='+exchange.value
+        })
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            font-family: Ubuntu;
+        }
+
+        main {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        main > header {
+            display: flex;
+            background: #392061;
+            height: 12vh;
+            width: 100%;
+            align-items: center;
+        }
+
+        main > header > h1 {
+            color: white;
+        }
+
+        main > header > i {
+            color: white;
+            padding: 30px;
+            font-size: 2em;
+        }
+
+        main > section {
+            background: #fff;
+            width: 100%;
+            height: 92vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        main > section > div.row {
+            padding: 30px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        main > section > div.row > input:focus {
+            outline: none;
+            width: 40%;
+        }
+
+        main > section > div.row > input {
+            width: 30%;
+            background: transparent;
+            color: #000;
+            font-size: 1.3em;
+            padding: 20px;
+            border: none;
+            border-bottom: 2px solid #392061;
+            margin-right: 20px;
+            transition: .5s ease;
+        }
+
+        main > section > div.row > button {
+            background: #7C238C;
+            color: white;
+            padding: 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            width: 60px;
+            height: 60px;
+            box-shadow: 2px 2px 2px rgba(0,0,0,0.4);
+        }
+
+        main > section > button.tooltip {
+            background: #7C238C;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 50000000px;
+            height: 50px;
+            width: 50px;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</body>
+</html>

@@ -2,12 +2,11 @@ import requests
 import pandas as pd
 import matplotlib.dates as mdates
 from datetime import date
-from config.env import API_KEY
 
 class Stoncks:
 
     base_url = "https://www.alphavantage.co/query?"
-    api_key = API_KEY
+    api_key = "API_KEY"
 
     def __init__(self, function, crypto, base_currency):
         self.function = function
@@ -20,19 +19,16 @@ class Stoncks:
 
         datas = [value for index, value in enumerate(response["Time Series (Digital Currency Daily)"])]
 
-        numeric_datas = [self.format_data(x) for x in datas]
-
         metrics = self.get_metrics(response, datas)
 
         return {
-            "time": [mdates.date2num(d) for d in numeric_datas],
             "datetime": datas,
-            "high": metrics['high'],
-            "low": metrics['low'],
-            "open": metrics['open_values'],
-            "close": metrics['close'],
-            "volume": metrics['volume'],
-            "market_cap": metrics['cap']
+            "high": metrics['high'][::-1],
+            "low": metrics['low'][::-1],
+            "open": metrics['open_values'][::-1],
+            "close": metrics['close'][::-1],
+            "volume": metrics['volume'][::-1],
+            "market_cap": metrics['cap'][::-1]
         }
 
     def format_data(self, data):

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% load static %}
+    <script src="{% static 'canvasjs.min.js' %}"></script> 
+    <script src="https://kit.fontawesome.com/18429bc2de.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vanilla-masker@1.1.1/build/vanilla-masker.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+    <title>Forevis</title>
+</head>
+<body>
+    <main>
+        <header>
+            <i class="fas fa-dollar-sign"></i>
+            <h1>Só no forevis</h1>
+        </header>
+        <section>
+            <div class="row" id="chartContainer"></div>
+            <button class="tooltip"><i class="fas fa-question"></i></button>
+        </section>
+    </main>
+
+    <script defer>
+        var requestData = "{{ quotes }}"
+        var media5Data = "{{ media5 }}"
+        var media10Data = "{{ media10 }}"
+        var analiseMedia5Data = "{{ analiseMedia5 }}"
+        var analiseMedia10Data = "{{ analiseMedia10 }}"
+
+        function setupChart(data, time) {
+            output = [];
+            
+            for (let i = 0; i < data.length; i++) {
+                output.push({
+                    x: new Date(
+                        parseInt(time[i][0].split("-")[0]),
+                        parseInt(time[i][0].split("-")[1]),
+                        parseInt(time[i][0].split("-")[2])
+                    ),
+                    y: data[i]
+                })
+            }
+
+            return output
+        }
+        
+        window.addEventListener('load', () => {
+            
+            requestData = requestData.replace(/&quot;/g, '"')
+            requestData = JSON.parse(requestData)
+            
+            dataPoints = []
+            analiseMedia5Points = []
+            analiseMedia10Points = []
+            media5Points = []
+            media10Points = []
+            
+            analiseMedia5Data = analiseMedia5Data.replace(/&quot;/g, '"')
+            analiseMedia5Data = analiseMedia5Data.replace(/False/g, 'false')
+            analiseMedia5Data = analiseMedia5Data.replace(/True/g, 'true')
+            analiseMedia5Data = JSON.parse(analiseMedia5Data)
+
+            for (let i = 0; i < analiseMedia5Data.length; i++) {
+                analiseMedia5Points.push({
+                    x: new Date(
+                        parseInt(requestData[i][0].split("-")[0]),
+                        parseInt(requestData[i][0].split("-")[1]),
+                        parseInt(requestData[i][0].split("-")[2])
+                    ),
+                    y: analiseMedia5Data[i]
+                })
+            }
+
+            media5Data = media5Data.replace(/&quot;/g, '"')
+            media5Data = JSON.parse(media5Data)
+
+            for (let i = 0; i < media5Data.length; i++) {
+                media5Points.push({
+                    x: new Date(
+                        parseInt(requestData[i][0].split("-")[0]),
+                        parseInt(requestData[i][0].split("-")[1]),
+                        parseInt(requestData[i][0].split("-")[2])
+                    ),
+                    y: media5Data[i]
+                })
+            }
+
+            media10Data = media10Data.replace(/&quot;/g, '"')
+            media10Data = JSON.parse(media10Data)
+
+            for (let i = 0; i < media10Data.length; i++) {
+                media10Points.push({
+                    x: new Date(
+                        parseInt(requestData[i][0].split("-")[0]),
+                        parseInt(requestData[i][0].split("-")[1]),
+                        parseInt(requestData[i][0].split("-")[2])
+                    ),
+                    y: media10Data[i]
+                })
+            }
+
+            for (const line of requestData) {
+                dataPoints.push({
+                    x: new Date(
+                        parseInt(line[0].split("-")[0]),
+                        parseInt(line[0].split("-")[1]),
+                        parseInt(line[0].split("-")[2])
+                    ),
+                    y: [
+                        parseFloat(line[1]),
+                        parseFloat(line[2]),
+                        parseFloat(line[3]),
+                        parseFloat(line[4])
+                    ]
+                })
+            }
+
+            const chart = new CanvasJS.Chart("chartContainer", {
+                animationEnabled: true,
+                theme: 'light2',
+                exportEnabled: true,
+                zoomEnabled: true,
+                title: {
+                    text: "BITGLOIN"
+                },
+                subtitles: [{
+                    text: "Time Series"
+                }],
+                toolTip: {
+                    shared: true
+                },
+                legend: {
+                    reversed: true,
+                    cursor: "pointer",
+                    itemclick: toggleDataSeries
+                },     
+                axisX: {
+                    interval: 1,
+                },
+                axisY: {
+                    includeZero: false,
+                    prefix: "$",
+                    title: "Value"
+                },
+                axisY2: {
+                    includeZero: false,
+                    prefix: "$",
+                    title: "Value"
+                },
+                axisY3: {
+                    includeZero: false,
+                    prefix: "$",
+                    title: "Value"
+                },
+                axisY4: {
+                    includeZero: false,
+                    prefix: "$",
+                    title: "Compra/Venda"
+                },
+                data: [
+                    {
+                        type: "candlestick",
+                        showInLegend: true,
+		                name: "Candlestick (OCHL)",
+                        yValueFormatString: "$##0.00",
+                        dataPoints: dataPoints
+                    },
+                    {
+                        type: "line",
+                        showInLegend: true,
+		                name: "Média movel (5 dias)",
+                        yValueFormatString: "$##0.00",
+                        dataPoints: media5Points
+                    },
+                    {
+                        type: "line",
+                        showInLegend: true,
+		                name: "Média movel (10 dias)",
+                        yValueFormatString: "$##0.00",
+                        dataPoints: media10Points
+                    },
+                    {
+                        type: "line",
+                        showInLegend: true,
+		                name: "Análise média",
+                        yValueFormatString: "$##0.00",
+                        dataPoints: analiseMedia5Points
+                    },
+                ]
+            })
+
+            chart.render()
+
+            function toggleDataSeries(e) {
+                if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                    e.dataSeries.visible = false;
+                } else {
+                    e.dataSeries.visible = true;
+                }
+                e.chart.render();
+            }
+
+        })
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            font-family: Ubuntu;
+        }
+
+        main {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        main > header {
+            display: flex;
+            background: #392061;
+            height: 12vh;
+            width: 100%;
+            align-items: center;
+        }
+
+        main > header > h1 {
+            color: white;
+        }
+
+        main > header > i {
+            color: white;
+            padding: 30px;
+            font-size: 2em;
+        }
+
+        main > section {
+            background: #fff;
+            width: 100%;
+            height: 92vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        main > section > div.row {
+            width: 90%;
+            height: 90%;
+        }
+
+        main > section > div.row > input:focus {
+            outline: none;
+            width: 40%;
+        }
+
+        main > section > div.row > input {
+            width: 30%;
+            background: transparent;
+            color: #000;
+            font-size: 1.3em;
+            padding: 20px;
+            border: none;
+            border-bottom: 2px solid #392061;
+            margin-right: 20px;
+            transition: .5s ease;
+        }
+
+        main > section > div.row > button {
+            background: #7C238C;
+            color: white;
+            padding: 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            width: 60px;
+            height: 60px;
+            box-shadow: 2px 2px 2px rgba(0,0,0,0.4);
+        }
+
+        main > section > button.tooltip {
+            background: #7C238C;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 50000000px;
+            height: 50px;
+            width: 50px;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</body>
+</html>
