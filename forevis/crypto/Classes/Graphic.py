@@ -1,5 +1,3 @@
-import mpl_finance
-
 from .Stoncks import Stoncks
 
 class Graphic:
