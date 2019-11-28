@@ -16,6 +16,8 @@ def chart(request):
     template = loader.get_template('crypto/chart.html')
 
     context = {
+        "crypto": crypto,
+        "exchange": exchange,
         "quotes": json.dumps(quotes),
         "volume": volume,
         "time": time,
