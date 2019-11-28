@@ -23,6 +23,10 @@
                     <i class="fas fa-search"></i>
                 </button>
             </div>
+            <div class="row spaced">
+                <button class="select-button active" data-analysis="lt">Long term analysis</button>
+                <button class="select-button" data-analysis="st">Swing trade</button>
+            </div>
             <button class="tooltip"><i class="fas fa-question"></i></button>
         </section>
     </main>
@@ -31,9 +35,21 @@
         const crypto = document.querySelector('main > section > div > input#crypto')
         const exchange = document.querySelector('main > section > div > input#exchange')
         const search = document.querySelector('main > section > div > button')
+        var analysis = 'lt'
 
         search.addEventListener('click', (ev) => {
-            window.location = 'http://localhost:8000/crypto/chart/?crypto='+crypto.value+'&exchange='+exchange.value
+            window.location = `http://localhost:8000/crypto/chart/?crypto=${crypto.value}&exchange=${exchange.value}&analysis=${analysis}`
+        })
+
+        const selectButtons = document.querySelectorAll('main > section > div.row > button.select-button')
+        
+        selectButtons.forEach((button) => {
+            button.addEventListener('click', (ev) => {
+                selectButtons.forEach((el) => el.classList.remove('active'))
+                ev.target.classList.add('active')
+                analysis = ev.target.dataset.analysis
+                console.log(analysis)
+            })
         })
     </script>
 
@@ -79,6 +95,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-direction: column;
         }
         
         main > section > div.row {
@@ -89,9 +106,37 @@
             justify-content: center;
         }
 
+        main > section > div.row > button.select-button {
+            width: 20%;
+            background: #FFF;
+            border: 2px solid #7C238C;
+            color: #7C238C;
+            transition: .25s ease;
+            cursor: pointer;
+        }
+
         main > section > div.row > input:focus {
             outline: none;
             width: 40%;
+        }
+
+        .spaced {
+            justify-content: space-evenly !important;
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        main > section > div.row > button.select-button:hover {
+            background: rgb(158, 64, 175);
+            color: #fff;
+        }
+
+        main > section > div.row > button.active {
+            background: #7C238C;
+            border: 2px solid #7C238C;
+            color: #fff;
         }
 
         main > section > div.row > input {

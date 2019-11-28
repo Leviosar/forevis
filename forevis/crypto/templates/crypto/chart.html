@@ -27,8 +27,8 @@
         var requestData = "{{ quotes }}"
         var media5Data = "{{ media5 }}"
         var media10Data = "{{ media10 }}"
-        var analiseMedia5Data = "{{ analiseMedia5 }}"
-        var analiseMedia10Data = "{{ analiseMedia10 }}"
+        var buy = "{{ buy }}"
+        var sell = "{{ sell }}"
 
         function setupChart(data, time) {
             output = [];
@@ -51,28 +51,16 @@
             
             requestData = requestData.replace(/&quot;/g, '"')
             requestData = JSON.parse(requestData)
-            
+            buy = buy.replace(/&quot;/g, '"')
+            buy = JSON.parse(buy)
+            sell = sell.replace(/&quot;/g, '"')
+            sell = JSON.parse(sell)
+
             dataPoints = []
-            analiseMedia5Points = []
-            analiseMedia10Points = []
             media5Points = []
             media10Points = []
-            
-            analiseMedia5Data = analiseMedia5Data.replace(/&quot;/g, '"')
-            analiseMedia5Data = analiseMedia5Data.replace(/False/g, 'false')
-            analiseMedia5Data = analiseMedia5Data.replace(/True/g, 'true')
-            analiseMedia5Data = JSON.parse(analiseMedia5Data)
-
-            for (let i = 0; i < analiseMedia5Data.length; i++) {
-                analiseMedia5Points.push({
-                    x: new Date(
-                        parseInt(requestData[i][0].split("-")[0]),
-                        parseInt(requestData[i][0].split("-")[1]),
-                        parseInt(requestData[i][0].split("-")[2])
-                    ),
-                    y: analiseMedia5Data[i]
-                })
-            }
+            buyPoints = []
+            sellPoints = []
 
             media5Data = media5Data.replace(/&quot;/g, '"')
             media5Data = JSON.parse(media5Data)
@@ -87,7 +75,7 @@
                     y: media5Data[i]
                 })
             }
-
+            
             media10Data = media10Data.replace(/&quot;/g, '"')
             media10Data = JSON.parse(media10Data)
 
@@ -101,6 +89,35 @@
                     y: media10Data[i]
                 })
             }
+
+            for (let i = 0; i < buy.length; i++) {
+                let buyPoint = 0
+                let sellPoint = 0
+
+                let xValue = new Date(
+                    parseInt(requestData[i][0].split("-")[0]),
+                    parseInt(requestData[i][0].split("-")[1]),
+                    parseInt(requestData[i][0].split("-")[2])
+                );
+
+                if (buy[i] == 1) {
+                    buyPoint = media5Points[i].y
+                    buyPoints.push({
+                        x: xValue,
+                        y: buyPoint,
+                        name: "Buy"
+                    })
+                } else if(sell[i] == 1){
+                    sellPoint = media5Points[i].y
+                    sellPoints.push({
+                        x: xValue,
+                        y: sellPoint,
+                        name: "Sell"
+                    })
+                } 
+                
+            }
+
 
             for (const line of requestData) {
                 dataPoints.push({
@@ -124,7 +141,7 @@
                 exportEnabled: true,
                 zoomEnabled: true,
                 title: {
-                    text: "{{BITGLOIN}}"
+                    text: "{{ crypto }}"
                 },
                 subtitles: [{
                     text: "Time Series"
@@ -143,7 +160,7 @@
                 axisY: {
                     includeZero: false,
                     prefix: "$",
-                    title: "{{exchange}}"
+                    title: "{{ exchange }}"
                 },
                 axisY2: {
                     includeZero: false,
@@ -158,7 +175,12 @@
                 axisY4: {
                     includeZero: false,
                     prefix: "$",
-                    title: "Compra/Venda"
+                    title: "Compra"
+                },
+                axisY5: {
+                    includeZero: false,
+                    prefix: "$",
+                    title: "Venda"
                 },
                 data: [
                     {
@@ -183,11 +205,22 @@
                         dataPoints: media10Points
                     },
                     {
-                        type: "line",
+                        type: "scatter",
                         showInLegend: true,
-		                name: "Análise média",
+                        markerColor: "#00ff00",
+                        markerSize: 15,
+		                name: "Compra",
                         yValueFormatString: "$##0.00",
-                        dataPoints: analiseMedia5Points
+                        dataPoints: buyPoints
+                    },
+                    {
+                        type: "scatter",
+                        showInLegend: true,
+                        markerColor: '#ff0000',
+                        markerSize: 15,
+		                name: "Venda",
+                        yValueFormatString: "$##0.00",
+                        dataPoints: sellPoints
                     },
                 ]
             })

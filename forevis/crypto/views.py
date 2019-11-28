@@ -11,8 +11,9 @@ def index(request):
 def chart(request):
     crypto = request.GET.get('crypto')
     exchange = request.GET.get('exchange')
-    stonkinho = Graphic(crypto, exchange)
-    quotes, volume, time, market, media5, media10, media20, analiseMedia5, analiseMedia10, analiseMedia20 = stonkinho.get_data()
+    analysis = request.GET.get('analysis')
+    stonkinho = Graphic(crypto, exchange, analysis)
+    quotes, volume, time, market, media5, media10, media20, buy, sell = stonkinho.get_data()
     template = loader.get_template('crypto/chart.html')
 
     context = {
@@ -25,8 +26,7 @@ def chart(request):
         "media5": media5,
         "media10": media10,
         "media20": media20,
-        "analiseMedia5": analiseMedia5,
-        "analiseMedia10": analiseMedia10,
-        "analiseMedia20": analiseMedia20
+        "buy": json.dumps(buy),
+        "sell": json.dumps(sell),
     }
     return HttpResponse(template.render(context, request))
