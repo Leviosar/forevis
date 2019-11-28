@@ -1,6 +1,4 @@
 import requests
-import pandas as pd
-import matplotlib.dates as mdates
 from datetime import date
 
 class Stoncks:
@@ -17,12 +15,12 @@ class Stoncks:
         response = requests.get(f'{self.base_url}function={self.function}&symbol={self.crypto}&market={self.base_currency}&apikey={self.api_key}')
         response = response.json()
 
-        datas = [value for index, value in enumerate(response["Time Series (Digital Currency Daily)"])]
+        dates = list(response["Time Series (Digital Currency Daily)"])
 
-        metrics = self.get_metrics(response, datas)
+        metrics = self.get_metrics(response, dates)
 
         return {
-            "datetime": datas,
+            "datetime": dates,
             "high": metrics['high'][::-1],
             "low": metrics['low'][::-1],
             "open": metrics['open_values'][::-1],
@@ -31,16 +29,13 @@ class Stoncks:
             "market_cap": metrics['cap'][::-1]
         }
 
-    def format_data(self, data):
-        return date(int(data[:4]), int(data[5:7]), int(data[8:]))
-
-    def get_metrics(self, response, datas):
+    def get_metrics(self, response, dates):
         metrics = {}
-        metrics['high'] = [int(float(response["Time Series (Digital Currency Daily)"][data][f"2a. high ({self.base_currency})"])) for data in datas]
-        metrics['low'] = [int(float(response["Time Series (Digital Currency Daily)"][data][f"3a. low ({self.base_currency})"])) for data in datas]
-        metrics['close'] = [int(float(response["Time Series (Digital Currency Daily)"][data][f"4a. close ({self.base_currency})"])) for data in datas]
-        metrics['open_values'] = [int(float(response["Time Series (Digital Currency Daily)"][data][f"1a. open ({self.base_currency})"])) for data in datas]
-        metrics['volume'] = [int(float(response["Time Series (Digital Currency Daily)"][data][f"5. volume"])) for data in datas]
-        metrics['cap'] = [int(float(response["Time Series (Digital Currency Daily)"][data][f"6. market cap (USD)"])) for data in datas]
+        metrics['high'] = [int(float(response["Time Series (Digital Currency Daily)"][date][f"2a. high ({self.base_currency})"])) for date in dates]
+        metrics['low'] = [int(float(response["Time Series (Digital Currency Daily)"][date][f"3a. low ({self.base_currency})"])) for date in dates]
+        metrics['close'] = [int(float(response["Time Series (Digital Currency Daily)"][date][f"4a. close ({self.base_currency})"])) for date in dates]
+        metrics['open_values'] = [int(float(response["Time Series (Digital Currency Daily)"][date][f"1a. open ({self.base_currency})"])) for date in dates]
+        metrics['volume'] = [int(float(response["Time Series (Digital Currency Daily)"][date][f"5. volume"])) for date in dates]
+        metrics['cap'] = [int(float(response["Time Series (Digital Currency Daily)"][date][f"6. market cap (USD)"])) for date in dates]
 
         return metrics
