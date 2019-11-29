@@ -25,67 +25,38 @@
 
     <script defer>
         var requestData = "{{ quotes }}"
-        var media5Data = "{{ media5 }}"
-        var media10Data = "{{ media10 }}"
-        var buy = "{{ buy }}"
-        var sell = "{{ sell }}"
-
-        function setupChart(data, time) {
-            output = [];
-            
-            for (let i = 0; i < data.length; i++) {
-                output.push({
-                    x: new Date(
-                        parseInt(time[i][0].split("-")[0]),
-                        parseInt(time[i][0].split("-")[1]),
-                        parseInt(time[i][0].split("-")[2])
-                    ),
-                    y: data[i]
-                })
-            }
-
-            return output
-        }
+        requestData = requestData.replace(/&quot;/g, '"')
+        candleStickData = JSON.parse(requestData)
         
+        var media5Data = JSON.parse("{{ media5 }}")
+        var media10Data = JSON.parse("{{ media10 }}")
+        var buy = JSON.parse("{{ buy }}")
+        var sell = JSON.parse("{{ sell }}")
+    
         window.addEventListener('load', () => {
-            
-            requestData = requestData.replace(/&quot;/g, '"')
-            requestData = JSON.parse(requestData)
-            buy = buy.replace(/&quot;/g, '"')
-            buy = JSON.parse(buy)
-            sell = sell.replace(/&quot;/g, '"')
-            sell = JSON.parse(sell)
-
-            dataPoints = []
+            dates = []
+            candleStickPoints = []
             media5Points = []
             media10Points = []
             buyPoints = []
             sellPoints = []
 
-            media5Data = media5Data.replace(/&quot;/g, '"')
-            media5Data = JSON.parse(media5Data)
+            for(const line of candleStickData) {
+                dates.push(new Date(
+                    parseInt(line[0].split("-")[0]),
+                    parseInt(line[0].split("-")[1]),
+                    parseInt(line[0].split("-")[2])
+                ))
+            }
 
             for (let i = 0; i < media5Data.length; i++) {
                 media5Points.push({
-                    x: new Date(
-                        parseInt(requestData[i][0].split("-")[0]),
-                        parseInt(requestData[i][0].split("-")[1]),
-                        parseInt(requestData[i][0].split("-")[2])
-                    ),
+                    x: dates[i],
                     y: media5Data[i]
                 })
-            }
-            
-            media10Data = media10Data.replace(/&quot;/g, '"')
-            media10Data = JSON.parse(media10Data)
-
-            for (let i = 0; i < media10Data.length; i++) {
+        
                 media10Points.push({
-                    x: new Date(
-                        parseInt(requestData[i][0].split("-")[0]),
-                        parseInt(requestData[i][0].split("-")[1]),
-                        parseInt(requestData[i][0].split("-")[2])
-                    ),
+                    x: dates[i],
                     y: media10Data[i]
                 })
             }
@@ -94,23 +65,17 @@
                 let buyPoint = 0
                 let sellPoint = 0
 
-                let xValue = new Date(
-                    parseInt(requestData[i][0].split("-")[0]),
-                    parseInt(requestData[i][0].split("-")[1]),
-                    parseInt(requestData[i][0].split("-")[2])
-                );
-
                 if (buy[i] == 1) {
                     buyPoint = media5Points[i].y
                     buyPoints.push({
-                        x: xValue,
+                        x: dates[i],
                         y: buyPoint,
                         name: "Buy"
                     })
                 } else if(sell[i] == 1){
                     sellPoint = media5Points[i].y
                     sellPoints.push({
-                        x: xValue,
+                        x: dates[i],
                         y: sellPoint,
                         name: "Sell"
                     })
@@ -118,19 +83,14 @@
                 
             }
 
-
-            for (const line of requestData) {
-                dataPoints.push({
-                    x: new Date(
-                        parseInt(line[0].split("-")[0]),
-                        parseInt(line[0].split("-")[1]),
-                        parseInt(line[0].split("-")[2])
-                    ),
+            for (let i = 0; i < candleStickData.length; i++) {
+                candleStickPoints.push({
+                    x: dates[i],
                     y: [
-                        parseFloat(line[1]),
-                        parseFloat(line[2]),
-                        parseFloat(line[3]),
-                        parseFloat(line[4])
+                        parseFloat(candleStickData[i][1]),
+                        parseFloat(candleStickData[i][2]),
+                        parseFloat(candleStickData[i][3]),
+                        parseFloat(candleStickData[i][4])
                     ]
                 })
             }
@@ -188,7 +148,7 @@
                         showInLegend: true,
 		                name: "Candlestick (OCHL)",
                         yValueFormatString: "$##0.00",
-                        dataPoints: dataPoints
+                        dataPoints: candleStickPoints
                     },
                     {
                         type: "line",
