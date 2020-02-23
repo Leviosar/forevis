@@ -226,6 +226,7 @@
             })
 
             chart.render()
+            document.querySelector('.canvasjs-chart-credit').remove()
 
             function toggleDataSeries(e) {
                 if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
