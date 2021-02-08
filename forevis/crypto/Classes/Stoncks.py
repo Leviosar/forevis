@@ -6,11 +6,11 @@ class Stoncks:
     base_url = "https://www.alphavantage.co/query?"
     api_key = "API_KEY"
 
-    def __init__(self, function, crypto, base_currency, analysis):
+    def __init__(self, function, crypto, base_currency, trade_type):
         self.function = function
         self.crypto = crypto
         self.base_currency = base_currency
-        self.analysis = analysis
+        self.trade_type = trade_type
 
     def send(self):
         response = requests.get(f'{self.base_url}function={self.function}&symbol={self.crypto}&market={self.base_currency}&apikey={self.api_key}')
@@ -18,9 +18,10 @@ class Stoncks:
 
         dates = list(response["Time Series (Digital Currency Daily)"])
 
-        if self.analysis == 'st':
-            dates = dates[0:30]
+        if self.trade_type == 'st':
+            dates = dates[0:40]
         dates = dates[::-1]
+
         metrics = self.get_metrics(response, dates)
 
         return {

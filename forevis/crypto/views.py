@@ -9,8 +9,8 @@ def index(request):
     return HttpResponse(template.render(context, request))
 
 def chart(request):
-    crypto = request.GET.get('crypto')
-    exchange = request.GET.get('exchange')
+    crypto = request.GET.get('crypto').upper()
+    exchange = request.GET.get('exchange').upper()
     analysis = request.GET.get('analysis')
     stonkinho = Graphic(crypto, exchange, analysis)
     quotes, volume, time, market, media5, media10, media20, buy, sell = stonkinho.get_data()
